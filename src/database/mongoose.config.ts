@@ -4,7 +4,7 @@ import {
   MongooseModuleOptions,
   MongooseOptionsFactory,
 } from '@nestjs/mongoose';
-import mongooseAutoPopulate from 'mongoose-autopopulate';
+import * as mongooseAutoPopulate from 'mongoose-autopopulate';
 import { AllConfigType } from 'src/config/config.type';
 
 @Injectable()

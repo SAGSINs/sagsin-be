@@ -5,6 +5,7 @@ import databaseConfig from './database/config/database.config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { MongooseConfigService } from './database/mongoose.config';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { NodeModule } from './node/node.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
     MongooseModule.forRootAsync({
       useClass: MongooseConfigService,
     }),
+    NodeModule,
   ],
   controllers: [],
   providers: [],
