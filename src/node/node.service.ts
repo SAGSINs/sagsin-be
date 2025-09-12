@@ -9,27 +9,22 @@ const HEARTBEAT_TIMEOUT_MS = 15_000;
 @Injectable()
 export class NodeService {
   private readonly logger = new Logger(NodeService.name);
-  // map để theo dõi timer mỗi node
   private timers = new Map<string, NodeJS.Timeout>();
 
   constructor(
     @InjectModel(NodeSchemaClass.name) private model: Model<NodeSchemaClass>,
-  ) {}
+  ) { }
 
   async upsertBeat(payload: {
-    nodeId: string;
     ip: string;
-    ts: number;
-    hostName: string;
   }) {
-    const { nodeId, ts, ...rest } = payload;
+    const { ip, ...rest } = payload;
 
     await this.model.updateOne(
-      { nodeId },
+      { ip },
       {
         $set: {
-          nodeId,
-          lastSeenAt: new Date(ts),
+          ip,
           status: NodeStatus.UP,
           ...rest,
         },
@@ -38,13 +33,13 @@ export class NodeService {
     );
 
     // reset watchdog
-    if (this.timers.has(nodeId)) clearTimeout(this.timers.get(nodeId)!);
+    if (this.timers.has(ip)) clearTimeout(this.timers.get(ip)!);
     this.timers.set(
-      nodeId,
+      ip,
       setTimeout(async () => {
-        this.logger.warn(`Node ${nodeId} timed out -> DOWN`);
+        this.logger.warn(`Node ${ip} timed out -> DOWN`);
         await this.model.updateOne(
-          { nodeId },
+          { ip },
           { $set: { status: NodeStatus.DOWN } },
         );
       }, HEARTBEAT_TIMEOUT_MS),
