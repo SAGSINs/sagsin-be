@@ -6,6 +6,7 @@ import { NodeService } from './node.service';
 
 interface HeartbeatRequest {
   ip: string;
+  hostname: string;
 }
 
 @Controller()
@@ -21,6 +22,7 @@ export class NodeController {
         next: async (msg) => {
           await this.nodes.upsertBeat({
             ip: msg.ip,
+            hostname: msg.hostname,
           });
         },
         error: (err) => {

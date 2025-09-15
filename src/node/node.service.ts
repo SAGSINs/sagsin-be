@@ -17,16 +17,17 @@ export class NodeService {
 
   async upsertBeat(payload: {
     ip: string;
+    hostname: string;
   }) {
-    const { ip, ...rest } = payload;
+    const { ip, hostname } = payload;
 
     await this.model.updateOne(
       { ip },
       {
         $set: {
           ip,
+          hostname,
           status: NodeStatus.UP,
-          ...rest,
         },
       },
       { upsert: true },

@@ -9,6 +9,8 @@ export class NodeSchemaClass {
   @Prop({ enum: NodeStatus, default: NodeStatus.DOWN })
   status: NodeStatus;
 
+  @Prop() hostname: string;
+
   @Prop() ip: string;
 }
 

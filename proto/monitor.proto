@@ -7,7 +7,8 @@ service NodeMonitor {
 }
 
 message HeartbeatRequest {
-  string ip = 3;
+  string ip = 1;
+  string hostname = 2;
 }
 
 message HeartbeatResponse {
