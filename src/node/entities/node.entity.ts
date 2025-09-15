@@ -12,6 +12,9 @@ export class NodeSchemaClass {
   @Prop() hostname: string;
 
   @Prop() ip: string;
+
+  @Prop({ type: Array, default: [] })
+  links: any[];
 }
 
 export const NodeEntity = SchemaFactory.createForClass(NodeSchemaClass);

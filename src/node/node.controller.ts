@@ -7,6 +7,7 @@ import { NodeService } from './node.service';
 interface HeartbeatRequest {
   ip: string;
   hostname: string;
+  links?: any[]; // Array of link metrics
 }
 
 @Controller()
@@ -23,6 +24,7 @@ export class NodeController {
           await this.nodes.upsertBeat({
             ip: msg.ip,
             hostname: msg.hostname,
+            links: msg.links || []
           });
         },
         error: (err) => {

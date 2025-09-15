@@ -4,7 +4,7 @@ import { Model } from 'mongoose';
 import { NodeSchemaClass } from './entities/node.entity';
 import { NodeStatus } from './domain/node-status.vo';
 
-const HEARTBEAT_TIMEOUT_MS = 15_000;
+const HEARTBEAT_TIMEOUT_MS = 20000;
 
 @Injectable()
 export class NodeService {
@@ -18,8 +18,9 @@ export class NodeService {
   async upsertBeat(payload: {
     ip: string;
     hostname: string;
+    links?: any[];
   }) {
-    const { ip, hostname } = payload;
+    const { ip, hostname, links = [] } = payload;
 
     await this.model.updateOne(
       { ip },
@@ -28,6 +29,7 @@ export class NodeService {
           ip,
           hostname,
           status: NodeStatus.UP,
+          links,
         },
       },
       { upsert: true },
@@ -38,7 +40,7 @@ export class NodeService {
     this.timers.set(
       ip,
       setTimeout(async () => {
-        this.logger.warn(`Node ${ip} timed out -> DOWN`);
+        this.logger.warn(`Node ${hostname} timed out -> DOWN`);
         await this.model.updateOne(
           { ip },
           { $set: { status: NodeStatus.DOWN } },
