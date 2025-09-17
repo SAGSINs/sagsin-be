@@ -6,6 +6,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { MongooseConfigService } from './database/mongoose.config';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { NodeModule } from './node/node.module';
+import { HeartbeatModule } from './heartbeat/heartbeat.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { NodeModule } from './node/node.module';
       useClass: MongooseConfigService,
     }),
     NodeModule,
+    HeartbeatModule,
   ],
   controllers: [],
   providers: [],

@@ -22,7 +22,7 @@ export class NodeService {
   }) {
     const { ip, hostname, links = [] } = payload;
 
-    await this.model.updateOne(
+    await this.model.findOneAndUpdate(
       { ip },
       {
         $set: {
