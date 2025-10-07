@@ -1,38 +1,34 @@
-// node.module.ts
 import { Module } from '@nestjs/common';
-import { NodeService } from './node.service';
-import { NodeController } from './node.controller';
+import { LinksService } from './links.service';
 import { MongooseModule, getConnectionToken } from '@nestjs/mongoose';
-import { NodeSchemaClass, NodeEntity } from './entities/node.entity';
-import { attachNodeHooks } from './repository/attach-node.hook';
+import { LinkSchemaClass, LinkEntity } from './entities/link.entity';
+import { attachLinkHooks } from './repository/attach-link.hook';
 import { HeartbeatModule } from 'src/heartbeat/heartbeat.module';
 import { HeartbeatGateway } from 'src/heartbeat/heartbeat.gateway';
 import { Connection } from 'mongoose';
-import { LinksModule } from 'src/links/links.module';
 
 @Module({
-  controllers: [NodeController],
-  providers: [NodeService],
+  providers: [LinksService],
   imports: [
     MongooseModule.forFeatureAsync([
       {
-        name: NodeSchemaClass.name,
+        name: LinkSchemaClass.name,
         imports: [HeartbeatModule],
         inject: [HeartbeatGateway, getConnectionToken()],
         useFactory: (gateway: HeartbeatGateway, connection: Connection) => {
-          const schema = NodeEntity;
-          attachNodeHooks(schema, connection, gateway, NodeSchemaClass.name);
+          const schema = LinkEntity;
+          attachLinkHooks(schema, connection, gateway, LinkSchemaClass.name);
           return schema;
         },
       },
     ]),
     HeartbeatModule,
-    LinksModule,
   ],
   exports: [
     MongooseModule.forFeature([
-      { name: NodeSchemaClass.name, schema: NodeEntity },
+      { name: LinkSchemaClass.name, schema: LinkEntity },
     ]),
+    LinksService,
   ],
 })
-export class NodeModule {}
+export class LinksModule { }

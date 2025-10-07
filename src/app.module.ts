@@ -7,6 +7,7 @@ import { MongooseConfigService } from './database/mongoose.config';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { NodeModule } from './node/node.module';
 import { HeartbeatModule } from './heartbeat/heartbeat.module';
+import { LinksModule } from './links/links.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { HeartbeatModule } from './heartbeat/heartbeat.module';
     }),
     NodeModule,
     HeartbeatModule,
+    LinksModule,
   ],
   controllers: [],
   providers: [],

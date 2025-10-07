@@ -6,15 +6,15 @@ export type NodeSchemaDocument = HydratedDocument<NodeSchemaClass>;
 
 @Schema({ timestamps: true, collection: 'nodes' })
 export class NodeSchemaClass {
+  @Prop()
+  name: string;
+
   @Prop({ enum: NodeStatus, default: NodeStatus.DOWN })
   status: NodeStatus;
 
   @Prop() hostname: string;
 
   @Prop() ip: string;
-
-  @Prop({ type: Array, default: [] })
-  links: any[];
 }
 
 export const NodeEntity = SchemaFactory.createForClass(NodeSchemaClass);

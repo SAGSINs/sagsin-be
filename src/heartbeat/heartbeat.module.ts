@@ -4,6 +4,6 @@ import { HeartbeatGateway } from './heartbeat.gateway';
 
 @Module({
   providers: [HeartbeatGateway, HeartbeatService],
-  exports: [HeartbeatGateway]
+  exports: [HeartbeatGateway],
 })
-export class HeartbeatModule { }
+export class HeartbeatModule {}
