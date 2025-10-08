@@ -15,6 +15,17 @@ export class NodeSchemaClass {
   @Prop() hostname: string;
 
   @Prop() ip: string;
+
+  @Prop({ enum: ['drone', 'ship', 'ground_station', 'mobile_device', 'satellite'], required: true })
+  type: 'drone' | 'ship' | 'ground_station' | 'mobile_device' | 'satellite';
+
+  @Prop({ type: Object })
+  metrics: {
+    cpuLoad: number;
+    jitterMs: number;
+    queueLen: number;
+    throughputMbps: number;
+  };
 }
 
 export const NodeEntity = SchemaFactory.createForClass(NodeSchemaClass);

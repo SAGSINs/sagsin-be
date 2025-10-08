@@ -8,7 +8,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors({
     origin: '*',
-    method: ['GET', 'POST', 'PUT', 'DELETE'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
   });
 
   const config = new DocumentBuilder()
@@ -28,13 +28,21 @@ async function bootstrap() {
         ? join(process.cwd(), process.env.GRPC_PROTO_PATH)
         : join(__dirname, '../proto/monitor.proto').toString(),
       url: process.env.GRPC_URL ?? '0.0.0.0:50051',
+
+      loader: {
+        keepCase: false,
+        longs: String,
+        enums: String,
+        defaults: true,
+        oneofs: true,
+      },
     },
   };
 
   app.connectMicroservice(grpcOptions);
   await app.startAllMicroservices();
   await app.listen(process.env.PORT ?? 3000);
+  console.log(`Application is running on: ${await app.getUrl()}`);
 }
 
-// avoid floating promise lint warning
 void bootstrap();

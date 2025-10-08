@@ -6,7 +6,7 @@ import { NodeStatus } from './domain/node-status.vo';
 import * as _ from 'lodash';
 
 const HEARTBEAT_TIMEOUT_MS = 20000;
-
+const MISSED_LIMIT = 3;
 @Injectable()
 export class NodeService {
   private readonly logger = new Logger(NodeService.name);
@@ -16,8 +16,10 @@ export class NodeService {
     @InjectModel(NodeSchemaClass.name) private model: Model<NodeSchemaClass>,
   ) { }
 
-  async updateNode(payload: { ip: string; hostname: string }) {
-    const { ip, hostname } = payload;
+  private missedCount = new Map<string, number>();
+
+  async updateNode(payload: { ip: string; hostname: string, metrics: any }) {
+    const { ip, hostname, metrics } = payload;
 
     await this.model.findOneAndUpdate(
       { ip },
@@ -27,21 +29,25 @@ export class NodeService {
           ip,
           hostname,
           status: NodeStatus.UP,
+          metrics,
+          type: hostname.split('_')[0] || 'unknown',
         },
       },
       { upsert: true },
     );
 
+    this.missedCount.set(ip, 0);
     if (this.timers.has(ip)) clearTimeout(this.timers.get(ip)!);
-    this.timers.set(
-      ip,
-      setTimeout(async () => {
-        this.logger.warn(`Node ${hostname} timed out -> DOWN`);
-        await this.model.updateOne(
-          { ip },
-          { $set: { status: NodeStatus.DOWN } },
-        );
-      }, HEARTBEAT_TIMEOUT_MS),
-    );
+
+    this.timers.set(ip, setTimeout(async () => {
+      const missed = (this.missedCount.get(ip) ?? 0) + 1;
+      if (missed < MISSED_LIMIT) {
+        this.missedCount.set(ip, missed);
+        return;
+      }
+
+      this.logger.warn(`Node ${hostname} timed out -> DOWN`);
+      await this.model.updateOne({ ip }, { $set: { status: NodeStatus.DOWN } });
+    }, HEARTBEAT_TIMEOUT_MS));
   }
 }

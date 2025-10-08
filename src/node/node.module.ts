@@ -1,13 +1,11 @@
-// node.module.ts
 import { Module } from '@nestjs/common';
 import { NodeService } from './node.service';
 import { NodeController } from './node.controller';
-import { MongooseModule, getConnectionToken } from '@nestjs/mongoose';
+import { MongooseModule } from '@nestjs/mongoose';
 import { NodeSchemaClass, NodeEntity } from './entities/node.entity';
 import { attachNodeHooks } from './repository/attach-node.hook';
 import { HeartbeatModule } from 'src/heartbeat/heartbeat.module';
 import { HeartbeatGateway } from 'src/heartbeat/heartbeat.gateway';
-import { Connection } from 'mongoose';
 import { LinksModule } from 'src/links/links.module';
 
 @Module({
@@ -18,10 +16,10 @@ import { LinksModule } from 'src/links/links.module';
       {
         name: NodeSchemaClass.name,
         imports: [HeartbeatModule],
-        inject: [HeartbeatGateway, getConnectionToken()],
-        useFactory: (gateway: HeartbeatGateway, connection: Connection) => {
+        inject: [HeartbeatGateway],
+        useFactory: (gateway: HeartbeatGateway) => {
           const schema = NodeEntity;
-          attachNodeHooks(schema, connection, gateway, NodeSchemaClass.name);
+          attachNodeHooks(schema, gateway);
           return schema;
         },
       },
@@ -35,4 +33,4 @@ import { LinksModule } from 'src/links/links.module';
     ]),
   ],
 })
-export class NodeModule {}
+export class NodeModule { }

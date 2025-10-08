@@ -12,10 +12,4 @@ export function attachLinkHooks(
     const links = await model.find().exec();
     gateway.server.emit('link-updated', links);
   });
-
-  schema.post('updateMany', async function () {
-    const model = connection.model(modelName);
-    const links = await model.find().exec();
-    gateway.server.emit('link-updated', links);
-  });
 }

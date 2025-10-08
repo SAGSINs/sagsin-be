@@ -9,6 +9,12 @@ interface HeartbeatRequest {
   ip: string;
   hostname: string;
   links: any[];
+  nodeMetrics: {
+    cpuLoad: number;
+    jitterMs: number;
+    queueLen: number;
+    throughputMbps: number;
+  }
 }
 
 @Controller()
@@ -16,7 +22,7 @@ export class NodeController {
   constructor(
     private readonly nodes: NodeService,
     private readonly links: LinksService,
-  ) {}
+  ) { }
 
   @GrpcStreamMethod('NodeMonitor', 'Heartbeat')
   async heartbeat(
@@ -28,6 +34,7 @@ export class NodeController {
           await this.nodes.updateNode({
             ip: msg.ip,
             hostname: msg.hostname,
+            metrics: msg.nodeMetrics,
           });
           await this.links.updateLinks(msg.hostname, msg.links);
         },
