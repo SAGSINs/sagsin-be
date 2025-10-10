@@ -8,6 +8,8 @@ import { ThrottlerModule } from '@nestjs/throttler';
 import { NodeModule } from './node/node.module';
 import { HeartbeatModule } from './heartbeat/heartbeat.module';
 import { LinksModule } from './links/links.module';
+import { HeuristicModule } from './heuristic/heuristic.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -30,8 +32,10 @@ import { LinksModule } from './links/links.module';
     NodeModule,
     HeartbeatModule,
     LinksModule,
+    HeuristicModule,
+    ScheduleModule.forRoot()
   ],
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule { }
