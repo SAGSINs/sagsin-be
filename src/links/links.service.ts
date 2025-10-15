@@ -35,11 +35,11 @@ export class LinksService {
                 destNode: dest,
                 available: typeof n.available === 'boolean' ? n.available : true,
                 metrics: {
-                    delay_ms: n.delay_ms ?? n.delayMs ?? n.delay ?? null,
-                    jitter_ms: n.jitter_ms ?? n.jitterMs ?? null,
-                    loss_rate: n.loss_rate ?? null,
-                    bandwidth_mbps: n.bandwidth_mbps ?? n.bandwidthMbps ?? null,
-                    queue_length: n.queue_length ?? n.queueLength ?? null,
+                    delayMs: n.delay_ms ?? n.delayMs ?? n.delay ?? null,
+                    jitterMs: n.jitter_ms ?? n.jitterMs ?? null,
+                    lossRate: n.loss_rate ?? null,
+                    bandwidthMbps: n.bandwidth_mbps ?? n.bandwidthMbps ?? null,
+                    queueLength: n.queue_length ?? n.queueLength ?? null,
                 },
                 updatedAt: new Date(),
             };
