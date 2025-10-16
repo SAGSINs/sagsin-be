@@ -18,8 +18,8 @@ export class NodeService {
 
   private missedCount = new Map<string, number>();
 
-  async updateNode(payload: { ip: string; hostname: string, metrics: any }) {
-    const { ip, hostname, metrics } = payload;
+  async updateNode(payload: { ip: string; hostname: string, metrics: any, lat: number, lng: number }) {
+    const { ip, hostname, metrics, lat, lng } = payload;
 
     await this.model.findOneAndUpdate(
       { ip },
@@ -31,6 +31,8 @@ export class NodeService {
           status: NodeStatus.UP,
           metrics,
           type: hostname.split('_')[0] || 'unknown',
+          lat,
+          lng,
         },
       },
       { upsert: true },

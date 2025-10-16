@@ -26,6 +26,9 @@ export class NodeSchemaClass {
     queueLen: number;
     throughputMbps: number;
   };
+
+  @Prop() lat: number;
+  @Prop() lng: number;
 }
 
 export const NodeEntity = SchemaFactory.createForClass(NodeSchemaClass);

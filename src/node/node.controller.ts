@@ -15,6 +15,8 @@ interface HeartbeatRequest {
     queueLen: number;
     throughputMbps: number;
   }
+  lat: number;
+  lng: number;
 }
 
 @Controller()
@@ -35,6 +37,8 @@ export class NodeController {
             ip: msg.ip,
             hostname: msg.hostname,
             metrics: msg.nodeMetrics,
+            lat: msg.lat,
+            lng: msg.lng,
           });
           await this.links.updateLinks(msg.hostname, msg.links);
         },
