@@ -10,6 +10,7 @@ import { HeartbeatModule } from './heartbeat/heartbeat.module';
 import { LinksModule } from './links/links.module';
 import { HeuristicModule } from './heuristic/heuristic.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -33,7 +34,8 @@ import { ScheduleModule } from '@nestjs/schedule';
     HeartbeatModule,
     LinksModule,
     HeuristicModule,
-    ScheduleModule.forRoot()
+    ScheduleModule.forRoot(),
+    HealthModule
   ],
   controllers: [],
   providers: [],
