@@ -1,9 +1,8 @@
 import { Module } from '@nestjs/common';
-import { HeartbeatService } from './heartbeat.service';
 import { HeartbeatGateway } from './heartbeat.gateway';
 
 @Module({
-  providers: [HeartbeatGateway, HeartbeatService],
+  providers: [HeartbeatGateway],
   exports: [HeartbeatGateway],
 })
-export class HeartbeatModule {}
+export class HeartbeatModule { }

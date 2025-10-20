@@ -11,6 +11,7 @@ import { LinksModule } from './links/links.module';
 import { HeuristicModule } from './heuristic/heuristic.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { HealthModule } from './health/health.module';
+import { TimelineModule } from './timeline/timeline.module';
 
 @Module({
   imports: [
@@ -35,7 +36,8 @@ import { HealthModule } from './health/health.module';
     LinksModule,
     HeuristicModule,
     ScheduleModule.forRoot(),
-    HealthModule
+    HealthModule,
+    TimelineModule
   ],
   controllers: [],
   providers: [],
