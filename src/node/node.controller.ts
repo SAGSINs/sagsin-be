@@ -14,7 +14,7 @@ interface HeartbeatRequest {
     jitterMs: number;
     queueLen: number;
     throughputMbps: number;
-  }
+  };
   lat: number;
   lng: number;
 }
@@ -24,7 +24,7 @@ export class NodeController {
   constructor(
     private readonly nodes: NodeService,
     private readonly links: LinksService,
-  ) { }
+  ) {}
 
   @GrpcStreamMethod('NodeMonitor', 'Heartbeat')
   async heartbeat(

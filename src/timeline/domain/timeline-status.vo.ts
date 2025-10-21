@@ -1,4 +1,4 @@
 export enum TimelineStatus {
-    PENDING = 'PENDING',
-    DONE = 'DONE',
+  PENDING = 'PENDING',
+  DONE = 'DONE',
 }

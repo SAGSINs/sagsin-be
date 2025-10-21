@@ -31,4 +31,4 @@ import { Connection } from 'mongoose';
     LinksService,
   ],
 })
-export class LinksModule { }
+export class LinksModule {}

@@ -37,9 +37,9 @@ import { TimelineModule } from './timeline/timeline.module';
     HeuristicModule,
     ScheduleModule.forRoot(),
     HealthModule,
-    TimelineModule
+    TimelineModule,
   ],
   controllers: [],
   providers: [],
 })
-export class AppModule { }
+export class AppModule {}

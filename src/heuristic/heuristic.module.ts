@@ -4,10 +4,7 @@ import { LinksModule } from 'src/links/links.module';
 import { NodeModule } from 'src/node/node.module';
 
 @Module({
-  imports: [
-    forwardRef(() => NodeModule),
-    forwardRef(() => LinksModule),
-  ],
+  imports: [forwardRef(() => NodeModule), forwardRef(() => LinksModule)],
   providers: [HeuristicService],
 })
-export class HeuristicModule { }
+export class HeuristicModule {}

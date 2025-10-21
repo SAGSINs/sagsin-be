@@ -33,4 +33,4 @@ import { LinksModule } from 'src/links/links.module';
     ]),
   ],
 })
-export class NodeModule { }
+export class NodeModule {}

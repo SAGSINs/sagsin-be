@@ -1,4 +1,11 @@
-import { MessageBody, OnGatewayConnection, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
+import {
+  MessageBody,
+  OnGatewayConnection,
+  OnGatewayInit,
+  SubscribeMessage,
+  WebSocketGateway,
+  WebSocketServer,
+} from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { algorithmStreamClient } from 'src/heuristic/heuristic.client';
 
@@ -7,11 +14,9 @@ export class HeartbeatGateway implements OnGatewayInit, OnGatewayConnection {
   @WebSocketServer()
   server: Server;
 
-  afterInit(server: Server) {
-  }
+  afterInit(server: Server) {}
 
-  handleConnection(client: Socket) {
-  }
+  handleConnection(client: Socket) {}
 
   @SubscribeMessage('heuristic:request-run')
   handleHeuristicRequestRun(@MessageBody() payload: any) {
@@ -45,22 +50,23 @@ export class HeartbeatGateway implements OnGatewayInit, OnGatewayConnection {
           algo: event.complete.algo,
           src: event.complete.src,
           dst: event.complete.dst,
-          result: event.complete.result ? {
-            path: event.complete.result.path,
-            total_weight: event.complete.result.total_weight,
-            total_delay_ms: event.complete.result.total_delay_ms,
-            total_jitter_ms: event.complete.result.total_jitter_ms,
-            avg_loss_rate: event.complete.result.avg_loss_rate,
-            min_bandwidth_mbps: event.complete.result.min_bandwidth_mbps,
-            hop_count: event.complete.result.hop_count,
-            stability_score: event.complete.result.stability_score,
-          } : null,
+          result: event.complete.result
+            ? {
+                path: event.complete.result.path,
+                total_weight: event.complete.result.total_weight,
+                total_delay_ms: event.complete.result.total_delay_ms,
+                total_jitter_ms: event.complete.result.total_jitter_ms,
+                avg_loss_rate: event.complete.result.avg_loss_rate,
+                min_bandwidth_mbps: event.complete.result.min_bandwidth_mbps,
+                hop_count: event.complete.result.hop_count,
+                stability_score: event.complete.result.stability_score,
+              }
+            : null,
         });
       }
     });
 
-    call.on('end', () => {
-    });
+    call.on('end', () => {});
 
     call.on('error', (err: any) => {
       console.error('[gRPC] Stream error:', err);

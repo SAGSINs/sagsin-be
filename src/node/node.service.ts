@@ -14,11 +14,17 @@ export class NodeService {
 
   constructor(
     @InjectModel(NodeSchemaClass.name) private model: Model<NodeSchemaClass>,
-  ) { }
+  ) {}
 
   private missedCount = new Map<string, number>();
 
-  async updateNode(payload: { ip: string; hostname: string, metrics: any, lat: number, lng: number }) {
+  async updateNode(payload: {
+    ip: string;
+    hostname: string;
+    metrics: any;
+    lat: number;
+    lng: number;
+  }) {
     const { ip, hostname, metrics, lat, lng } = payload;
 
     await this.model.findOneAndUpdate(
@@ -39,17 +45,23 @@ export class NodeService {
     );
 
     this.missedCount.set(ip, 0);
-    if (this.timers.has(ip)) clearTimeout(this.timers.get(ip)!);
+    if (this.timers.has(ip)) clearTimeout(this.timers.get(ip));
 
-    this.timers.set(ip, setTimeout(async () => {
-      const missed = (this.missedCount.get(ip) ?? 0) + 1;
-      if (missed < MISSED_LIMIT) {
-        this.missedCount.set(ip, missed);
-        return;
-      }
+    this.timers.set(
+      ip,
+      setTimeout(async () => {
+        const missed = (this.missedCount.get(ip) ?? 0) + 1;
+        if (missed < MISSED_LIMIT) {
+          this.missedCount.set(ip, missed);
+          return;
+        }
 
-      this.logger.warn(`Node ${hostname} timed out -> DOWN`);
-      await this.model.updateOne({ ip }, { $set: { status: NodeStatus.DOWN } });
-    }, HEARTBEAT_TIMEOUT_MS));
+        this.logger.warn(`Node ${hostname} timed out -> DOWN`);
+        await this.model.updateOne(
+          { ip },
+          { $set: { status: NodeStatus.DOWN } },
+        );
+      }, HEARTBEAT_TIMEOUT_MS),
+    );
   }
 }

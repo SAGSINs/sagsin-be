@@ -5,4 +5,4 @@ import { HeartbeatGateway } from './heartbeat.gateway';
   providers: [HeartbeatGateway],
   exports: [HeartbeatGateway],
 })
-export class HeartbeatModule { }
+export class HeartbeatModule {}

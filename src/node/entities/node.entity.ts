@@ -16,7 +16,10 @@ export class NodeSchemaClass {
 
   @Prop() ip: string;
 
-  @Prop({ enum: ['drone', 'ship', 'ground_station', 'mobile_device', 'satellite'], required: true })
+  @Prop({
+    enum: ['drone', 'ship', 'ground_station', 'mobile_device', 'satellite'],
+    required: true,
+  })
   type: 'drone' | 'ship' | 'ground_station' | 'mobile_device' | 'satellite';
 
   @Prop({ type: Object })

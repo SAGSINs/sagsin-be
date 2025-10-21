@@ -7,116 +7,119 @@ import { TimelineService } from '../timeline.service';
 const TIMELINE_PROTO_PATH = join(__dirname, '../../../proto/timeline.proto');
 
 const timelinePackageDef = protoLoader.loadSync(TIMELINE_PROTO_PATH, {
-    keepCase: true,
-    longs: String,
-    enums: String,
-    defaults: true,
-    oneofs: true,
+  keepCase: true,
+  longs: String,
+  enums: String,
+  defaults: true,
+  oneofs: true,
 });
 
-const timelineProto: any = grpc.loadPackageDefinition(timelinePackageDef).timeline;
+const timelineProto: any =
+  grpc.loadPackageDefinition(timelinePackageDef).timeline;
 
 /**
  * gRPC Server for Timeline Service
  * Listens on port 50053 for timeline updates from file agents
  */
 export class TimelineGrpcServer {
-    private server: grpc.Server;
-    private readonly port: string;
-    private readonly logger = new Logger(TimelineGrpcServer.name);
+  private server: grpc.Server;
+  private readonly port: string;
+  private readonly logger = new Logger(TimelineGrpcServer.name);
 
-    constructor(
-        private readonly timelineService: TimelineService,
-        port: string = '0.0.0.0:50053'
-    ) {
-        this.port = port;
-        this.server = new grpc.Server();
-        this.setupServer();
+  constructor(
+    private readonly timelineService: TimelineService,
+    port: string = '0.0.0.0:50053',
+  ) {
+    this.port = port;
+    this.server = new grpc.Server();
+    this.setupServer();
+  }
+
+  private setupServer() {
+    this.server.addService(timelineProto.TimelineService.service, {
+      SendTimelineUpdate: this.handleTimelineUpdate.bind(this),
+      StreamTimelineUpdates: this.handleTimelineStream.bind(this),
+    });
+  }
+
+  private async handleTimelineUpdate(
+    call: grpc.ServerUnaryCall<any, any>,
+    callback: grpc.sendUnaryData<any>,
+  ) {
+    try {
+      const { transfer_id, hostname, timestamp, status } = call.request;
+
+      await this.timelineService.addTimelineUpdate(
+        transfer_id,
+        hostname,
+        timestamp,
+        status,
+      );
+
+      callback(null, {
+        success: true,
+        message: 'Timeline update saved successfully',
+      });
+    } catch (error) {
+      this.logger.error('Error handling update:', error);
+      callback(
+        {
+          code: grpc.status.INTERNAL,
+          message: error.message,
+        },
+        null,
+      );
     }
+  }
 
-    private setupServer() {
-        this.server.addService(timelineProto.TimelineService.service, {
-            SendTimelineUpdate: this.handleTimelineUpdate.bind(this),
-            StreamTimelineUpdates: this.handleTimelineStream.bind(this),
-        });
-    }
+  private handleTimelineStream(call: grpc.ServerReadableStream<any, any>) {
+    call.on('data', async (update: any) => {
+      try {
+        const { transfer_id, hostname, timestamp, status } = update;
 
-    private async handleTimelineUpdate(
-        call: grpc.ServerUnaryCall<any, any>,
-        callback: grpc.sendUnaryData<any>
-    ) {
-        try {
-            const { transfer_id, hostname, timestamp, status } = call.request;
+        const statusValue = status === 1 ? 'DONE' : 'PENDING';
 
-            await this.timelineService.addTimelineUpdate(
-                transfer_id,
-                hostname,
-                timestamp,
-                status
-            );
+        await this.timelineService.addTimelineUpdate(
+          transfer_id,
+          hostname,
+          timestamp,
+          statusValue,
+        );
+      } catch (error) {
+        this.logger.error('Error processing stream update:', error);
+      }
+    });
 
-            callback(null, {
-                success: true,
-                message: 'Timeline update saved successfully'
-            });
-        } catch (error) {
-            this.logger.error('Error handling update:', error);
-            callback({
-                code: grpc.status.INTERNAL,
-                message: error.message
-            }, null);
-        }
-    }
+    call.on('end', () => {});
 
-    private handleTimelineStream(call: grpc.ServerReadableStream<any, any>) {
-        call.on('data', async (update: any) => {
-            try {
-                const { transfer_id, hostname, timestamp, status } = update;
+    call.on('error', (error) => {
+      this.logger.error('Stream error:', error);
+    });
+  }
 
-                const statusValue = status === 1 ? 'DONE' : 'PENDING';
+  async start() {
+    return new Promise<void>((resolve, reject) => {
+      this.server.bindAsync(
+        this.port,
+        grpc.ServerCredentials.createInsecure(),
+        (error, port) => {
+          if (error) {
+            this.logger.error('Failed to start:', error);
+            reject(error);
+            return;
+          }
+          this.server.start();
+          resolve();
+        },
+      );
+    });
+  }
 
-                await this.timelineService.addTimelineUpdate(
-                    transfer_id,
-                    hostname,
-                    timestamp,
-                    statusValue as 'DONE' | 'PENDING'
-                );
-            } catch (error) {
-                this.logger.error('Error processing stream update:', error);
-            }
-        });
-
-        call.on('end', () => {
-        });
-
-        call.on('error', (error) => {
-            this.logger.error('Stream error:', error);
-        });
-    }
-
-    async start() {
-        return new Promise<void>((resolve, reject) => {
-            this.server.bindAsync(
-                this.port,
-                grpc.ServerCredentials.createInsecure(),
-                (error, port) => {
-                    if (error) {
-                        this.logger.error('Failed to start:', error);
-                        reject(error);
-                        return;
-                    }
-                    this.server.start();
-                    resolve();
-                }
-            );
-        });
-    }
-
-    async stop() {
-        return new Promise<void>((resolve) => {
-            this.server.tryShutdown(() => {
-                resolve();
-            });
-        });
-    }
+  async stop() {
+    return new Promise<void>((resolve) => {
+      this.server.tryShutdown(() => {
+        resolve();
+      });
+    });
+  }
 }
