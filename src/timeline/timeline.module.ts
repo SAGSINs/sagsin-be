@@ -40,7 +40,6 @@ export class TimelineModule implements OnModuleInit, OnModuleDestroy {
 
   async onModuleInit() {
     const port = process.env.TIMELINE_GRPC_PORT || '0.0.0.0:50053';
-    console.log(`[TimelineModule] Initializing gRPC server on ${port}...`);
 
     this.grpcServer = new TimelineGrpcServer(
       this.timelineService,
@@ -49,7 +48,6 @@ export class TimelineModule implements OnModuleInit, OnModuleDestroy {
 
     try {
       await this.grpcServer.start();
-      console.log(`[TimelineModule] ✅ gRPC server started successfully`);
     } catch (error) {
       console.error('[TimelineModule] ❌ Failed to start gRPC server:', error);
       console.error('[TimelineModule] Error details:', error.message);

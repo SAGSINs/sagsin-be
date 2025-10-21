@@ -42,7 +42,6 @@ async function bootstrap() {
   app.connectMicroservice(grpcOptions);
   await app.startAllMicroservices();
   await app.listen(process.env.PORT ?? 3000);
-  console.log(`Application is running on: ${await app.getUrl()}`);
 }
 
 void bootstrap();

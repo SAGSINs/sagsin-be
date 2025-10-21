@@ -46,10 +46,8 @@ export class TimelineGrpcServer {
         callback: grpc.sendUnaryData<any>
     ) {
         try {
-            console.log('Received timeline update via gRPC', call.request);
             const { transfer_id, hostname, timestamp, status } = call.request;
 
-            // Save to database via timeline service
             await this.timelineService.addTimelineUpdate(
                 transfer_id,
                 hostname,
@@ -71,14 +69,11 @@ export class TimelineGrpcServer {
     }
 
     private handleTimelineStream(call: grpc.ServerReadableStream<any, any>) {
-        this.logger.log('Stream connection established');
-
         call.on('data', async (update: any) => {
             try {
                 const { transfer_id, hostname, timestamp, status } = update;
 
                 const statusValue = status === 1 ? 'DONE' : 'PENDING';
-                this.logger.log(`Stream update: ${transfer_id} @ ${hostname} → ${statusValue}`);
 
                 await this.timelineService.addTimelineUpdate(
                     transfer_id,
@@ -92,7 +87,6 @@ export class TimelineGrpcServer {
         });
 
         call.on('end', () => {
-            this.logger.log('Stream ended');
         });
 
         call.on('error', (error) => {
@@ -112,7 +106,6 @@ export class TimelineGrpcServer {
                         return;
                     }
                     this.server.start();
-                    this.logger.log(`🎧 gRPC Server listening on ${this.port}`);
                     resolve();
                 }
             );
@@ -122,7 +115,6 @@ export class TimelineGrpcServer {
     async stop() {
         return new Promise<void>((resolve) => {
             this.server.tryShutdown(() => {
-                this.logger.log('Server stopped');
                 resolve();
             });
         });

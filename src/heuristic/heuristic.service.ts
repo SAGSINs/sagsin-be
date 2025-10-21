@@ -54,10 +54,6 @@ export class HeuristicService {
             heuristicClient.UpdateGraph(graphSnapshot, (err: any, _: any) => {
                 if (err) {
                     this.logger.warn(`Heuristic update failed: ${err.message}`);
-                } else {
-                    this.logger.log(
-                        `Graph sent to heuristic (${nodes.length} nodes, ${links.length} links)`,
-                    );
                 }
             });
         } catch (error) {

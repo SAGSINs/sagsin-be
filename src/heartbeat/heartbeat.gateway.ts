@@ -8,11 +8,9 @@ export class HeartbeatGateway implements OnGatewayInit, OnGatewayConnection {
   server: Server;
 
   afterInit(server: Server) {
-    console.log('[WS] Gateway initialized');
   }
 
   handleConnection(client: Socket) {
-    console.log(`[WS] Client connected: ${client.id} (${client.handshake.address})`);
   }
 
   @SubscribeMessage('heuristic:request-run')
@@ -62,7 +60,6 @@ export class HeartbeatGateway implements OnGatewayInit, OnGatewayConnection {
     });
 
     call.on('end', () => {
-      console.log('[gRPC] Stream ended');
     });
 
     call.on('error', (err: any) => {
